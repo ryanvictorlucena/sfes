@@ -39,3 +39,28 @@ def listar_fila(unidade_id: int, Session = Depends(get_db)):
         models.Ticket.unidade_id == unidade_id, 
         models.Ticket.status == "AGUARDANDO"
     ).order_by(models.Ticket.criado_em).all()
+
+    resultado = []
+    for index, ticket in enumerate(tickets):
+        paciente = db.query(models.Paciente).filter(models.Paciente.id == ticket.paciente_id).first()
+        resultado.append({
+            "id": ticket.id,
+            "posicao": index + 1,
+            "iniciais": obter_iniciais(paciente.nome) if paciente else "??",
+            "status": ticket.status
+        })
+    return resultado
+
+    @router.post("/tickets/{ticket_id}/chamar", response_model = schemas.TicketInterno)
+    def chamar_ticket(ticket_id: int, db: Session = Depends(get_db)):
+        ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+        if not ticket:
+            raise HTTPException(status_code = 404, detail = "Ticket não encontrado!")
+        if ticket.status != "AGUARDANDO":
+            raise HTTPException(status_code = 400, detail = "Ticket não está aguardando!")
+
+        ticket.status = "CHAMADO"
+        ticket.chamado_em = datetime.utcnow()
+        db.commit()
+        db.refresh(ticket)
+        return ticket
