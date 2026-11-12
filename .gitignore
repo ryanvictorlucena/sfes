@@ -13,5 +13,5 @@ fila.db
 # Variáveis de ambiente
 .env
 
-# VS Code
+# VScode
 .vscode/
