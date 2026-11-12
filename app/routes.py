@@ -13,6 +13,14 @@ def obter_iniciais(nome: str) -> str:
         return partes[0][:2].upper()
     return (partes[0][0] + partes[-1][0]).upper()
 
+@router.post("/unidades")
+def criar_unidade(nome: str, endereco: str, db: schemas = Depends(get_db)):
+    db_unidade = models.Unidade(nome = nome, endereco = endereco)
+    db.add(db_unidade)
+    db.commit()
+    db.refresh(db_unidade)
+    return db_unidade
+
 @router.post("/pacientes", response_model = schemas.PacienteCreate)
 def criar_paciente(paciente: schemas.PacienteCreate, db: Session = Depends(get_db)):
     db_paciente = models.Paciente(**paciente.model_dump())
@@ -34,8 +42,8 @@ def criar_ticket(payload: schemas.TicketInterno, db: Session = Depends(get_db)):
     return novo_ticket
 
 @router.post("/filas/{unidades_id}", response_model = List[schemas.TicketPublico])
-def listar_fila(unidade_id: int, Session = Depends(get_db)):
-    tickets = db.query(models.Ticket).filter(
+def listar_fila(unidade_id: int, db: Session = Depends(get_db)):
+    ticket = db.query(models.Ticket).filter(
         models.Ticket.unidade_id == unidade_id, 
         models.Ticket.status == "AGUARDANDO"
     ).order_by(models.Ticket.criado_em).all()
