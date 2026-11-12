@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declative_base, sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./fila.db"
 
@@ -9,7 +9,7 @@ engine = create_engine(
 
 SessionLocal = sessionmaker(autocommit = False, autoFlush = False, bind = engine)
 
-Base = declative_base()
+Base = declarative_base()
 
 def get_db():
     db = SessionLocal()
