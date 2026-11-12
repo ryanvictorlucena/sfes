@@ -19,8 +19,8 @@ class Paciente(Base):
 class Ticket(Base):
     __tablename__ = "ticket"
     id = Column(Integer, primary_key = True, index = True)
-    unidade_id = Column(Integer, ForeignKey("unidades_id"), nullable = False)
-    pacientes_id = Column(Integer, ForeignKey("pacientes_id"), nullable = False)
+    unidade_id = Column(Integer, ForeignKey("unidades.id"), nullable = False)
+    pacientes_id = Column(Integer, ForeignKey("pacientes.id"), nullable = False)
     status = Column(String, default = "AGUARDANDO", nullable = False)
     criado_em = Column(DateTime, default = datetime.utcnow, nullable = False)
     chamado_em = Column(DateTime, nullable = True)
