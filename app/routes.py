@@ -64,3 +64,15 @@ def listar_fila(unidade_id: int, Session = Depends(get_db)):
         db.commit()
         db.refresh(ticket)
         return ticket
+
+    @router.post("/tickets/{ticket_id}/iniciar", response_model = schemas.TicketInterno)
+    def iniciar_atendimento(ticket_id: int, db: Session = Depends(get_db)):
+        ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
+        if not ticket:
+            raise HTTPException(status_code = 404, detail = "Ticket não encontrado!")
+
+        ticket.status = "EM_ATENDIMENTO"
+        ticket.iniciado_em: datetime.utcnow()
+        db.commit()
+        db.refresh(ticket)
+        return ticket
