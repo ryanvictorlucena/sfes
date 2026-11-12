@@ -59,6 +59,25 @@ def listar_fila(unidade_id: int, db: Session = Depends(get_db)):
         })
     return resultado
 
+@router.get("/painel/{unidade_id}")
+def listar_fila_painel(unidade_id: int, db: Session = Depends(get_db)):
+    ticket = db.query(models.Ticket).filter(
+        models.Ticket.unidade_id == unidade_id,
+        models.Ticket.status.in_(["AGUARDANDO", "CHAMADO", "EM_ATENDIMENTO"])
+    ).order_by(models.Ticket.criado_em).all()
+
+    resultado = []
+    for tickets in ticket:
+        paciente = db.query(models.Paciente).filter(
+            models.Paciente.id == tickets.paciente_id).first()
+        resultado.append({
+            "id": tickets.id,
+            "nome_completo": paciente.nome,
+            "paciente_id": paciente.id,
+            "status": tickets.status
+        })
+    return resultado
+
     @router.post("/tickets/{ticket_id}/chamar", response_model = schemas.TicketInterno)
     def chamar_ticket(ticket_id: int, db: Session = Depends(get_db)):
         ticket = db.query(models.Ticket).filter(models.Ticket.id == ticket_id).first()
