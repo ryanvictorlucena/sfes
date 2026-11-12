@@ -4,6 +4,12 @@ Sistema de fila de espera onde o intuito é fazer com que o paciente possa ter m
 
 ## Para colocar a API em execução
 
+### Criando ambiente virtual
+
+    python -m venv venv
+
+### Ativando o ambiente virtual
+
     .\venv\Scripts\Activate
 
 ### Instalar as dependências do projeto
