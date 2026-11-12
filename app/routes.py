@@ -30,7 +30,7 @@ def criar_paciente(paciente: schemas.PacienteCreate, db: Session = Depends(get_d
     return db_paciente
 
 @router.post("/tickets", response_model = schemas.TicketInterno)
-def criar_ticket(payload: schemas.TicketInterno, db: Session = Depends(get_db)):
+def criar_ticket(payload: schemas.TicketCreate, db: Session = Depends(get_db)):
     novo_ticket = models.Ticket(
         unidade_id = payload.unidade_id,
         paciente_id = payload.paciente_id,
@@ -41,7 +41,7 @@ def criar_ticket(payload: schemas.TicketInterno, db: Session = Depends(get_db)):
     db.refresh(novo_ticket)
     return novo_ticket
 
-@router.post("/filas/{unidades_id}", response_model = List[schemas.TicketPublico])
+@router.get("/filas/{unidade_id}", response_model = List[schemas.TicketPublico])
 def listar_fila(unidade_id: int, db: Session = Depends(get_db)):
     ticket = db.query(models.Ticket).filter(
         models.Ticket.unidade_id == unidade_id, 
@@ -49,7 +49,7 @@ def listar_fila(unidade_id: int, db: Session = Depends(get_db)):
     ).order_by(models.Ticket.criado_em).all()
 
     resultado = []
-    for index, ticket in enumerate(tickets):
+    for index, ticket in enumerate(ticket):
         paciente = db.query(models.Paciente).filter(models.Paciente.id == ticket.paciente_id).first()
         resultado.append({
             "id": ticket.id,
